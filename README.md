@@ -1,6 +1,6 @@
 # clickern
 
-A new Flutter project.
+An app to earn money in just one click.
 
 ## Getting Started
 
