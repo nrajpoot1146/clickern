@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:ui';
 
+import 'package:clickern/dashboard.dart';
+import 'package:clickern/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,10 +18,50 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   IconData eyeIcon = Icons.visibility;
   bool isPassVisible = false;
+  bool _progressVisibility = false;
   TextEditingController textEditingControllerEmail = TextEditingController();
   TextEditingController textEditingControllerPass = TextEditingController();
 
-  _onPressedLoginButton() {}
+  _onPressedLoginButton() {
+    setState(() {
+      _progressVisibility = true;
+    });
+    var username = textEditingControllerEmail.text;
+    var password = textEditingControllerPass.text;
+    var data = {'username': username, 'password': password};
+
+    http
+        .post(Uri.parse('https://clickern.000webhostapp.com/login'), body: data)
+        .then((value) {
+      final Map responce = jsonDecode(value.body);
+      if (responce['status'] == 'OK') {
+        isLoggedIn = true;
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext ctx) => const Dashboard()));
+      } else {
+        showDialog(
+            context: context,
+            builder: (BuildContext ctx) {
+              return AlertDialog(
+                title: const Text('Invalid username or password!'),
+                actions: [
+                  // ignore: deprecated_member_use
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("OK"))
+                ],
+              );
+            });
+      }
+      setState(() {
+        _progressVisibility = false;
+      });
+    });
+  }
 
   _onPressedForgotPassButton() {}
 
@@ -102,7 +146,13 @@ class LoginPageState extends State<LoginPage> {
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
-                  )
+                  ),
+                  Visibility(
+                      visible: _progressVisibility,
+                      child: Container(
+                        margin: const EdgeInsets.all(10),
+                        child: const CircularProgressIndicator(),
+                      )),
                 ],
               ),
             ),
