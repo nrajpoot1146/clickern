@@ -6,6 +6,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewExample extends StatefulWidget {
   const WebViewExample({Key? key, required this.url}) : super(key: key);
+
   final String url;
 
   @override
@@ -13,9 +14,10 @@ class WebViewExample extends StatefulWidget {
 }
 
 class _WebViewExampleState extends State<WebViewExample> {
+  _WebViewExampleState();
+
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
-  _WebViewExampleState();
 
   @override
   void initState() {

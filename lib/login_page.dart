@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:clickern/dashboard.dart';
 import 'package:clickern/main.dart';
+import 'package:clickern/model/common.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,40 +13,48 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LoginPageState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
 class LoginPageState extends State<LoginPage> {
   IconData eyeIcon = Icons.visibility;
   bool isPassVisible = false;
-  bool _progressVisibility = false;
   TextEditingController textEditingControllerEmail = TextEditingController();
   TextEditingController textEditingControllerPass = TextEditingController();
 
-  _onPressedLoginButton() {
+  bool _progressVisibility = false;
+
+  _onPressedLoginButton() async {
     setState(() {
       _progressVisibility = true;
     });
     var username = textEditingControllerEmail.text;
     var password = textEditingControllerPass.text;
-    var data = {'username': username, 'password': password};
-
-    http
-        .post(Uri.parse('https://clickern.000webhostapp.com/login'), body: data)
-        .then((value) {
+    DeviceInfo deviceInfo = await CommonLibFunction.getDeviceDetails();
+    var data = {
+      'username': username,
+      'password': password,
+      'deviceInfo': deviceInfo.toJson(),
+    };
+    print(data.toString());
+    http.post(Uri.parse(API_URL + '/login'), body: data).then((value) {
       final Map responce = jsonDecode(value.body);
       if (responce['status'] == 'OK') {
+        print("object: " + responce.toString());
         isLoggedIn = true;
+        prefs?.setString('sessionId', responce['uniqueId']);
+        prefs?.setBool('isLoggedIn', isLoggedIn);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (BuildContext ctx) => const Dashboard()));
       } else {
+        String msg = responce['msg'];
         showDialog(
             context: context,
             builder: (BuildContext ctx) {
               return AlertDialog(
-                title: const Text('Invalid username or password!'),
+                title: Text(msg),
                 actions: [
                   // ignore: deprecated_member_use
                   FlatButton(
@@ -72,8 +81,31 @@ class LoginPageState extends State<LoginPage> {
     });
   }
 
+  _checkLoggedIn(Function callback) async {
+    DeviceInfo deviceInfo = await CommonLibFunction.getDeviceDetails();
+    var data = {'sessionId': sessionId, 'deviceInfo': deviceInfo.toJson()};
+    http.post(Uri.parse(API_URL + '/isLoggedIn'), body: data).then((value) {
+      final Map response = jsonDecode(value.body);
+      if (response['status'] == 'OK') {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext ctx) => const Dashboard()));
+      } else {
+        isLoggedIn = false;
+        sessionId = '';
+        prefs?.setString('sessionId', sessionId);
+        prefs?.setBool('isLoggedIn', isLoggedIn);
+      }
+      callback();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoggedIn) {
+      _checkLoggedIn(() {});
+    }
     return Scaffold(
         backgroundColor: Colors.white,
         body: Container(

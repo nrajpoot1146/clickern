@@ -12,12 +12,13 @@ class LinkList extends StatefulWidget {
 }
 
 class LinkListState extends State<LinkList> {
-  TextEditingController textEditingController = TextEditingController();
-  String tempData = 'naren';
   Map<String, dynamic>? data;
   bool isLoaded = false;
   // ignore: non_constant_identifier_names
   List<Widget> link_list = <Widget>[];
+
+  String tempData = 'naren';
+  TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
