@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:clickern/dashboard.dart';
 import 'package:clickern/main.dart';
 import 'package:clickern/model/common.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -36,12 +35,12 @@ class LoginPageState extends State<LoginPage> {
       'password': password,
       'deviceInfo': deviceInfo.toJson(),
     };
-    print(data.toString());
+
     http.post(Uri.parse(API_URL + '/login'), body: data).then((value) {
       final Map responce = jsonDecode(value.body);
       if (responce['status'] == 'OK') {
-        print("object: " + responce.toString());
         isLoggedIn = true;
+        sessionId = responce['uniqueId'];
         prefs?.setString('sessionId', responce['uniqueId']);
         prefs?.setBool('isLoggedIn', isLoggedIn);
         Navigator.pushReplacement(
@@ -57,7 +56,7 @@ class LoginPageState extends State<LoginPage> {
                 title: Text(msg),
                 actions: [
                   // ignore: deprecated_member_use
-                  FlatButton(
+                  TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -87,10 +86,13 @@ class LoginPageState extends State<LoginPage> {
     http.post(Uri.parse(API_URL + '/isLoggedIn'), body: data).then((value) {
       final Map response = jsonDecode(value.body);
       if (response['status'] == 'OK') {
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext ctx) => const Dashboard()));
+        try {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext ctx) => const Dashboard()));
+          // ignore: empty_catches
+        } catch (e) {}
       } else {
         isLoggedIn = false;
         sessionId = '';
@@ -156,11 +158,12 @@ class LoginPageState extends State<LoginPage> {
                   const Padding(padding: EdgeInsets.all(5)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
+                    children: const [
+                      /*TextButton(
                         onPressed: _onPressedForgotPassButton,
                         child: const Text('Forgot Password?'),
-                      )
+                        
+                      )*/
                     ],
                   ),
                   Container(

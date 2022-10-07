@@ -4,8 +4,9 @@ import 'package:clickern/links_list.dart';
 import 'package:clickern/login_page.dart';
 import 'package:clickern/main.dart';
 import 'package:clickern/model/common.dart';
+import 'package:clickern/payment_page.dart';
 import 'package:clickern/profile_page.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:clickern/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +18,21 @@ class Dashboard extends StatefulWidget {
 }
 
 class DashboardState extends State<Dashboard> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  _onPressedHomeButton() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext ctx) => WebView(
+                  url: "https://knowyourelement.co.in/",
+                  linkDetails: const {"target_link": ''},
+                )));
+  }
+
   _onPressedLinkListButton() {
     Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext ctx) => const LinkList()));
@@ -27,9 +43,14 @@ class DashboardState extends State<Dashboard> {
         MaterialPageRoute(builder: (BuildContext ctx) => const Profile()));
   }
 
+  _onPressedPaymentButton() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext ctx) => const Payment()));
+  }
+
   _onPressedLogout() async {
     DeviceInfo deviceInfo = await CommonLibFunction.getDeviceDetails();
-    var data = {'sessionId': sessionId, 'deviceInfo': deviceInfo};
+    var data = {'sessionId': sessionId, 'deviceInfo': deviceInfo.toString()};
 
     http.post(Uri.parse(API_URL + '/logout'), body: data).then((value) {
       var response = jsonDecode(value.body);
@@ -39,6 +60,7 @@ class DashboardState extends State<Dashboard> {
             MaterialPageRoute(
                 builder: (BuildContext ctx) => const LoginPage()));
       }
+      prefs?.clear();
     });
   }
 
@@ -70,8 +92,7 @@ class DashboardState extends State<Dashboard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    MenuItem(
-                        title: 'Home', onPressed: _onPressedLinkListButton),
+                    MenuItem(title: 'Home', onPressed: _onPressedHomeButton),
                     const Padding(padding: EdgeInsets.all(10)),
                     MenuItem(
                         title: 'Profile', onPressed: _onPressedProfileButton)
@@ -87,9 +108,9 @@ class DashboardState extends State<Dashboard> {
                         onPressed: _onPressedLinkListButton),
                     const Padding(padding: EdgeInsets.all(10)),
                     MenuItem(
-                        title: 'Payment', onPressed: _onPressedLinkListButton)
+                        title: 'Payment', onPressed: _onPressedPaymentButton)
                   ],
-                )
+                ),
               ],
             )));
   }

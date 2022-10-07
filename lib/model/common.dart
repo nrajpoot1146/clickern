@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 class DeviceInfo {
   String? deviceName;
@@ -84,7 +85,9 @@ class CommonLibFunction {
         deviceInfo.identifier = data.identifierForVendor; //UUID for iOS
       }
     } on PlatformException {
-      print('Failed to get platform version');
+      if (kDebugMode) {
+        print('Failed to get platform version');
+      }
     }
 
 //if (!mounted) return;

@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'package:clickern/main.dart';
 import 'package:clickern/webview.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 class LinkList extends StatefulWidget {
@@ -22,30 +23,62 @@ class LinkListState extends State<LinkList> {
 
   @override
   void initState() {
-    // ignore: todo
-    // TODO: implement initState
     super.initState();
     fetchData();
   }
 
   fetchData() async {
-    http
-        .get(Uri.parse('https://clickern.000webhostapp.com/name'))
-        .then((value) {
+    link_list.clear();
+    http.post(Uri.parse(API_URL + "/fetchlist"),
+        body: {'sessionId': sessionId}).then((value) {
       final List<dynamic> templist = jsonDecode(value.body);
 
+      var srNo = 0;
       for (var element in templist) {
-        link_list.add(TextButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext ctx) => WebViewExample(
+        srNo += 1;
+        link_list.add(
+          TextButton(
+            onPressed: int.parse(element['click_count'].toString()) > 0
+                ? null
+                : () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext ctx) => WebView(
                           url: element['short_link'],
-                        )));
-          },
-          child: Text(element['short_link']),
-        ));
+                          linkDetails: element,
+                          isEnableTimer: true,
+                        ),
+                      ),
+                    ).then((value) => fetchData());
+                  },
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    srNo.toString() + '.',
+                  ),
+                ),
+                Expanded(
+                  flex: 8,
+                  child: Text(
+                    element['short_link'],
+                    style: int.parse(element['click_count'].toString()) > 0
+                        ? GoogleFonts.actor(color: Colors.black)
+                        : GoogleFonts.actor(),
+                  ),
+                ),
+                // Expanded(
+                //   flex: 1,
+                //   child: Text(
+                //     element['click_count'].toString(),
+                //   ),
+                // )
+              ],
+            ),
+          ),
+        );
       }
 
       setState(() {
@@ -61,9 +94,11 @@ class LinkListState extends State<LinkList> {
         title: const Text('List'),
       ),
       body: isLoaded
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: link_list,
+          ? SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: link_list,
+              ),
             )
           : const Center(
               child: Padding(
@@ -74,7 +109,7 @@ class LinkListState extends State<LinkList> {
                   width: 32,
                   height: 32,
                 ),
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(0),
               ),
             ),
     );

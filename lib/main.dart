@@ -1,15 +1,11 @@
-import 'dart:convert';
-
-import 'package:clickern/dashboard.dart';
 import 'package:clickern/login_page.dart';
-import 'package:clickern/model/common.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 bool isLoggedIn = false;
 // ignore: constant_identifier_names
-const String API_URL = 'https://clickern.000webhostapp.com';
+// const String API_URL = 'http://clickern.co.in';
+const String API_URL = 'https://clickern.knowyourelement.co.in';
 String sessionId = '';
 SharedPreferences? prefs;
 
@@ -30,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Clickern',
         theme: ThemeData(
             primarySwatch: Colors.blue, primaryColorDark: Colors.black12),
         home: const LoginPage());

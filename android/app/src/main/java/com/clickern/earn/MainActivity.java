@@ -1,4 +1,4 @@
-package com.clickern.clickern;
+package com.clickern.earn;
 
 import io.flutter.embedding.android.FlutterActivity;
 
