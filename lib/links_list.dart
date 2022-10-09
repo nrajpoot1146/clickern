@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:clickern/main.dart';
+import 'package:clickern/model/LinkDetail.dart';
+import 'package:clickern/model/LinksDetail.dart';
 import 'package:clickern/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,10 +30,14 @@ class LinkListState extends State<LinkList> {
   }
 
   fetchData() async {
+    LinksDetail linksDetail = LinksDetail.fromServer();
+    //List<Widget> te = linksDetail.getViewWidget(context);
+
     link_list.clear();
     http.post(Uri.parse(API_URL + "/fetchlist"),
         body: {'sessionId': sessionId}).then((value) {
       final List<dynamic> templist = jsonDecode(value.body);
+      //LinksDetail linksDetail = LinksDetail.fromJson(value.body);
 
       var srNo = 0;
       for (var element in templist) {

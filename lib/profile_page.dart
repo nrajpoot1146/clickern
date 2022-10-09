@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:clickern/main.dart';
 import 'package:clickern/model/common.dart';
 import 'package:clickern/model/user_data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,8 +30,8 @@ class _ProfileState extends State<Profile> {
       http.post(Uri.parse(API_URL + '/getUserDetails'),
           body: {'sessionId': sessionId}).then(
         (value) {
-          var usrData = jsonDecode(value.body);
-
+          userData = UserData.fromMap(jsonDecode(value.body));
+          if (kDebugMode) print(userData);
           data.add(
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +47,7 @@ class _ProfileState extends State<Profile> {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    usrData['user_name'].toString(),
+                    userData!.username,
                   ),
                 ),
               ],
@@ -67,9 +68,7 @@ class _ProfileState extends State<Profile> {
                 ),
                 Expanded(
                   flex: 4,
-                  child: Text(usrData['first_name'].toString() +
-                      " " +
-                      usrData['last_name'].toString()),
+                  child: Text(userData!.firstName + " " + userData!.lastName),
                 ),
               ],
             ),
@@ -90,7 +89,7 @@ class _ProfileState extends State<Profile> {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    usrData['email'].toString(),
+                    userData!.email,
                   ),
                 ),
               ],
@@ -112,7 +111,7 @@ class _ProfileState extends State<Profile> {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    usrData['mob_no'].toString(),
+                    userData!.mobileNumber,
                   ),
                 ),
               ],

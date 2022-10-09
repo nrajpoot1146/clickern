@@ -1,17 +1,18 @@
 import 'dart:convert';
 
 class UserData {
-  String? firstName;
-  String? lastName;
-  String? username;
-  String? email;
-  String? mobileNumber;
+  String firstName;
+  String lastName;
+  String username;
+  String email;
+  String mobileNumber;
+
   UserData({
-    this.firstName,
-    this.lastName,
-    this.username,
-    this.email,
-    this.mobileNumber,
+    this.firstName = "",
+    this.lastName = "",
+    this.username = "",
+    this.email = "",
+    this.mobileNumber = "",
   });
 
   UserData copyWith({
@@ -32,21 +33,21 @@ class UserData {
 
   Map<String, dynamic> toMap() {
     return {
-      'firstName': firstName,
-      'lastName': lastName,
-      'username': username,
+      'first_name': firstName,
+      'last_name': lastName,
+      'user_name': username,
       'email': email,
-      'mobileNumber': mobileNumber,
+      'mob_no': mobileNumber,
     };
   }
 
   factory UserData.fromMap(Map<String, dynamic> map) {
     return UserData(
-      firstName: map['firstName'],
-      lastName: map['lastName'],
-      username: map['username'],
+      firstName: map['first_name'],
+      lastName: map['last_name'],
+      username: map['user_name'],
       email: map['email'],
-      mobileNumber: map['mobileNumber'],
+      mobileNumber: map['mob_no'],
     );
   }
 
